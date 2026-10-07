@@ -72,8 +72,8 @@ The whole design rests on one principle:
 
 Here is the upload screen. Drop a file in and the side panel walks through what happens next: format detection, extraction, GST and totals verification, then confidence scoring and exceptions.
 
-<img width="500" height="300" alt="Screenshot 2026-10-08 015259" src="https://github.com/user-attachments/assets/7324f5c6-98c2-4426-8c10-ca7f7240d97e" /> 
-<img width="500" height="300" alt="Screenshot 2026-10-08 015227" src="https://github.com/user-attachments/assets/4b478580-da14-4217-90fc-3f1662e84a4b" />
+<img style="width: 50%;" alt="Screenshot 2026-10-08 015259" src="https://github.com/user-attachments/assets/7324f5c6-98c2-4426-8c10-ca7f7240d97e" /> 
+<img style="width: 50%;" alt="Screenshot 2026-10-08 015227" src="https://github.com/user-attachments/assets/4b478580-da14-4217-90fc-3f1662e84a4b" />
 
 ---
 
@@ -198,7 +198,7 @@ Document Image / Text
         │
         ▼
 ┌──────────────────────────────────────────────────────────────────┐
-│  STAGE 1: PaddleOCR (PP-OCRv4 + PP-Structure)                   │
+│  STAGE 1: PaddleOCR (PP-OCRv4 + PP-Structure)                    │
 │  ─────────────────────────────────────────────                   │
 │  • Detects text regions in the image                             │
 │  • Reconstructs table cells and rows                             │
@@ -208,23 +208,23 @@ Document Image / Text
                            │  (raw text + image)
                            ▼
 ┌──────────────────────────────────────────────────────────────────┐
-│  STAGE 2: Qwen2.5-VL-7B-Instruct (Vision-Language Model)        │
+│  STAGE 2: Qwen2.5-VL-7B-Instruct (Vision-Language Model)         │
 │  ─────────────────────────────────────────────────────────────── │
 │  Input: [Document Image] + [OCR Text] + [Extraction Prompt]      │
-│  Task: Semantic understanding → structured JSON extraction        │
-│  Output:                                                          │
-│    • supplier.name, supplier.gstin, supplier.address              │
-│    • buyer.name, buyer.gstin, buyer.address                       │
-│    • invoice_number, invoice_date, place_of_supply, IRN           │
-│    • line_items[]: description, HSN/SAC, qty, rate, taxes         │
+│  Task: Semantic understanding → structured JSON extraction       │
+│  Output:                                                         │
+│    • supplier.name, supplier.gstin, supplier.address             │
+│    • buyer.name, buyer.gstin, buyer.address                      │
+│    • invoice_number, invoice_date, place_of_supply, IRN          │
+│    • line_items[]: description, HSN/SAC, qty, rate, taxes        │
 │    • tax_summary: CGST, SGST, IGST, cess, total_tax              │
-│    • totals: subtotal, grand_total, amount_in_words               │
+│    • totals: subtotal, grand_total, amount_in_words              │
 │    • confidence scores per field (0.0 – 1.0)                     │
 └──────────────────────────┬───────────────────────────────────────┘
                            │  (structured JSON)
                            ▼
 ┌──────────────────────────────────────────────────────────────────┐
-│  STAGE 3: Deterministic GST Validation Engine (no AI)           │
+│  STAGE 3: Deterministic GST Validation Engine (no AI)            │ 
 │  Rules-based cross-checks on extracted values                    │
 └──────────────────────────────────────────────────────────────────┘
 ```
@@ -241,39 +241,39 @@ Document Image / Text
 │                          VYOM+ System Architecture                          │
 ├─────────────────────────────────────────────────────────────────────────────┤
 │                                                                             │
-│   ┌─────────────┐        ┌──────────────────────────────────────────────┐  │
-│   │   User /    │        │              FastAPI Backend                  │  │
-│   │  Evaluator  │◄──────►│                                              │  │
-│   │  (Browser)  │  REST  │  ┌──────────┐  ┌───────────┐  ┌──────────┐  │  │
-│   └─────────────┘        │  │  Upload  │  │  Invoice  │  │  Export  │  │  │
-│                           │  │  Router  │  │   CRUD   │  │  Router  │  │  │
-│   ┌─────────────┐        │  └────┬─────┘  └─────┬─────┘  └────┬─────┘  │  │
-│   │  Streamlit  │        │       │               │              │        │  │
-│   │  Demo UI   │◄───────►│  ┌────▼──────────────▼──────────────▼─────┐  │  │
-│   └─────────────┘        │  │           Processing Pipeline           │  │  │
-│                           │  │                                         │  │  │
-│                           │  │  File Router → [Excel/CSV/PDF/Image]   │  │  │
-│                           │  │       │                                 │  │  │
-│                           │  │  ┌────▼─────────────────────────────┐  │  │  │
-│                           │  │  │     AI Extraction Engine         │  │  │  │
-│                           │  │  │  PaddleOCR → Qwen2.5-VL-7B      │  │  │  │
-│                           │  │  └────────────────┬─────────────────┘  │  │  │
-│                           │  │                   │                     │  │  │
-│                           │  │  ┌────────────────▼─────────────────┐  │  │  │
-│                           │  │  │    GST Validation Engine         │  │  │  │
-│                           │  │  │  (Deterministic Rules)           │  │  │  │
-│                           │  │  └────────────────┬─────────────────┘  │  │  │
-│                           │  │                   │                     │  │  │
-│                           │  │  ┌────────────────▼─────────────────┐  │  │  │
-│                           │  │  │  Confidence Scorer + HITL Flag   │  │  │  │
-│                           │  │  └────────────────┬─────────────────┘  │  │  │
-│                           │  └────────────────────┼─────────────────┘  │  │
-│                           │                       ▼                     │  │
-│                           │         ┌─────────────────────────┐         │  │
-│                           │         │    SQLite / PostgreSQL  │         │  │
-│                           │         │    (Invoice Records)    │         │  │
-│                           │         └─────────────────────────┘         │  │
-│                           └──────────────────────────────────────────────┘  │
+│   ┌─────────────┐        ┌──────────────────────────────────────────────┐   │
+│   │   User /    │        │              FastAPI Backend                 │   │
+│   │  Evaluator  │◄──────►│                                              │   │
+│   │  (Browser)  │  REST  │  ┌──────────┐  ┌───────────┐  ┌──────────┐   │   │
+│   └─────────────┘        │  │  Upload  │  │  Invoice  │  │  Export  │   │   │
+│                          │  │  Router  │  │   CRUD    │  │  Router  │   │   │
+│   ┌─────────────┐        │  └────┬─────┘  └─────┬─────┘  └────┬─────┘   │   │
+│   │  Streamlit  │        │       │              │             │         │   │
+│   │  Demo UI   │◄───────►│  ┌────▼──────────────▼──────────────▼─────┐  │   │
+│   └─────────────┘        │  │           Processing Pipeline          │  │   │
+│                          │  │                                        │  │   │
+│                          │  │  File Router → [Excel/CSV/PDF/Image]   │  │   │
+│                          │  │       │                                │  │   │
+│                          │  │  ┌────▼─────────────────────────────┐  │  │   │
+│                          │  │  │     AI Extraction Engine         │  │  │   │
+│                          │  │  │   PaddleOCR → Qwen2.5-VL-7B      │  │  │   │
+│                          │  │  └────────────────┬─────────────────┘  │  │   │
+│                          │  │                   │                    │  │   │
+│                          │  │  ┌────────────────▼─────────────────┐  │  │   │
+│                          │  │  │    GST Validation Engine         │  │  │   │
+│                          │  │  │  (Deterministic Rules)           │  │  │   │
+│                          │  │  └────────────────┬─────────────────┘  │  │   │
+│                          │  │                   │                    │  │   │
+│                          │  │  ┌────────────────▼─────────────────┐  │  │   │
+│                          │  │  │  Confidence Scorer + HITL Flag   │  │  │   │
+│                          │  │  └────────────────┬─────────────────┘  │  │   │
+│                          │  └────────────────────┼───────────────────┘  │   │
+│                          │                       ▼                      │   │
+│                          │         ┌─────────────────────────┐          │   │
+│                          │         │    SQLite / PostgreSQL  │          │   │
+│                          │         │    (Invoice Records)    │          │   │
+│                          │         └─────────────────────────┘          │   │
+│                          └──────────────────────────────────────────────┘   │
 └─────────────────────────────────────────────────────────────────────────────┘
 ```
 
@@ -426,46 +426,46 @@ VYOM+ uses a **Human-in-the-Loop (HITL) agentic review workflow** for documents 
 
 ```
                     ┌─────────────────────────────┐
-                    │      Document Uploaded       │
+                    │      Document Uploaded      │
                     └──────────────┬──────────────┘
                                    │
                                    ▼
                     ┌─────────────────────────────┐
-                    │  AI Pipeline Runs (Stages 1-4)│
+                    │AI Pipeline Runs (Stages 1-4)│
                     └──────────────┬──────────────┘
                                    │
                     ┌──────────────▼──────────────┐
-                    │  Confidence ≥ 90%?           │
-                    └──────┬───────────────┬───────┘
+                    │      Confidence ≥ 90%?      │
+                    └──────┬───────────────┬──────┘
                    YES     │               │  NO
                            ▼               ▼
               ┌────────────────┐   ┌──────────────────────────┐
-              │  Auto-Approved │   │  Flagged for Human Review │
-              │  status=valid  │   │  status=needs_review      │
-              └────────────────┘   │  Low-confidence fields    │
-                                   │  highlighted in UI        │
+              │  Auto-Approved │   │  Flagged for Human Review│
+              │  status=valid  │   │  status=needs_review     │
+              └────────────────┘   │  Low-confidence fields   │
+                                   │  highlighted in UI       │
                                    └──────────┬───────────────┘
                                               │
                                    ┌──────────▼───────────────┐
-                                   │  Operator Views Invoice   │
+                                   │  Operator Views Invoice  │
                                    │  in Review UI            │
                                    └──────────┬───────────────┘
                                               │
                                    ┌──────────▼───────────────┐
-                                   │  Operator Corrects Field  │
+                                   │  Operator Corrects Field │
                                    │  PUT /api/documents/{id} │
-                                   │  { field_path: "...",     │
-                                   │    corrected_value: "..." }│
+                                   │  { field_path: "...",    │
+                                   │  corrected_value: "..." }│
                                    └──────────┬───────────────┘
                                               │
                                    ┌──────────▼───────────────┐
-                                   │  Re-validation Triggered  │
-                                   │  Confidence Recalculated  │
+                                   │  Re-validation Triggered │
+                                   │  Confidence Recalculated │
                                    └──────────┬───────────────┘
                                               │
                                    ┌──────────▼───────────────┐
-                                   │  Record Updated in DB     │
-                                   │  Correction Logged        │
+                                   │  Record Updated in DB    │
+                                   │  Correction Logged       │
                                    └──────────────────────────┘
 ```
 
@@ -767,16 +767,16 @@ The AI model is heavy (about 7B parameters), and most laptops can't run it local
 │   Evaluator's Browser                                    │
 │          │                                               │
 │          ▼                                               │
-│   Streamlit / Next.js UI  ◄──── runs on your laptop     │
+│   Streamlit / Next.js UI  ◄──── runs on your laptop      │
 │          │                                               │
 │          ▼                                               │
-│   FastAPI Backend         ◄──── runs on your laptop     │
+│   FastAPI Backend         ◄──── runs on your laptop      │
 │     (file routing, validation, export, DB)               │
 │          │                                               │
 │          │  HTTP POST (image + text)                     │
 │          ▼                                               │
-│   AI Inference Server  ◄──── Google Colab / HuggingFace │
-│   (Qwen2.5-VL-7B +         Spaces (FREE GPU T4/P100)   │
+│   AI Inference Server  ◄──── Google Colab / HuggingFace  │
+│   (Qwen2.5-VL-7B +         Spaces (FREE GPU T4/P100)     │
 │    PaddleOCR)              exposed via ngrok tunnel      │
 │          │                                               │
 │          │  returns JSON                                 │
