@@ -1,7 +1,6 @@
 # VYOM+ — End-to-End AI-Powered GST Invoice Intelligence System
 
-> **Hacktober Fest 4 · Open Source AI Hackathon · Problem Statement 3**  
-> Organized by **Elevate** · Qualifier Round · Team Submission
+> **HacktoberFest Hack Day · Open Source AI Hackathon · Problem Statement 3**  
 
 ---
 
@@ -867,5 +866,4 @@ The end result is a system that can take a blurry photo of a handwritten vendor 
 
 ---
 
-*Hacktober Fest 4 · Open Source AI Hackathon · Qualifier Submission · Problem Statement 3*  
 *All technologies used are open-source or open-weight. No proprietary AI APIs.*
