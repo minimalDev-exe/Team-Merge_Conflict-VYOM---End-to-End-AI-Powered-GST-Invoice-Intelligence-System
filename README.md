@@ -1,7 +1,6 @@
 # VYOM+ — End-to-End AI-Powered GST Invoice Intelligence System
 
 > **Hacktober Fest 4 · Open Source AI Hackathon · Problem Statement 3**  
-> Organized by **Elevate** · Qualifier Round · Team Submission
 
 ---
 
@@ -856,6 +855,5 @@ VYOM+ addresses a **real, high-impact problem** in the Indian GST compliance spa
 The result is a system that can take a blurry photo of a handwritten vendor bill and return a validated, machine-readable GST invoice record — **without any proprietary API calls, without any subscription cost, and without any data leaving the user's infrastructure**.
 
 ---
-
-*Hacktober Fest 4 · Open Source AI Hackathon · Qualifier Submission · Problem Statement 3*  
+ 
 *All technologies used are open-source or open-weight. No proprietary AI APIs.*
