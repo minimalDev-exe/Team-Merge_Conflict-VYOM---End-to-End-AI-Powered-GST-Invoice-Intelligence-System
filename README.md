@@ -72,7 +72,8 @@ The whole design rests on one principle:
 
 Here is the upload screen. Drop a file in and the side panel walks through what happens next: format detection, extraction, GST and totals verification, then confidence scoring and exceptions.
 
-![Upload screen with a drag-and-drop area for PDF, JPG, PNG, XLSX and CSV files up to 20 MB, and a four-step "What happens next" panel](docs/screenshots/upload.png)
+<img width="500" height="300" alt="Screenshot 2026-10-08 015259" src="https://github.com/user-attachments/assets/7324f5c6-98c2-4426-8c10-ca7f7240d97e" /> 
+<img width="500" height="300" alt="Screenshot 2026-10-08 015227" src="https://github.com/user-attachments/assets/4b478580-da14-4217-90fc-3f1662e84a4b" />
 
 ---
 
