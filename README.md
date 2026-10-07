@@ -1,6 +1,7 @@
 # VYOM+ — End-to-End AI-Powered GST Invoice Intelligence System
 
-> **HacktoberFest Hack Day · Open Source AI Hackathon · Problem Statement 3**  
+> **Hacktober Fest 4 · Open Source AI Hackathon · Problem Statement 3**  
+> Organized by **Elevate** · Qualifier Round · Team Submission
 
 ---
 
@@ -33,68 +34,72 @@
 
 ### VYOM+ — End-to-End AI-Powered GST Invoice Intelligence System
 
-**VYOM+** is an open-source, AI-driven document intelligence platform purpose-built for the Indian GST ecosystem. It accepts real-world invoice documents in any common format — handwritten, scanned, printed, or digital — and converts them into clean, validated, machine-readable financial records suitable for downstream accounting workflows.
+**VYOM+** is an open-source document intelligence platform built for the Indian GST ecosystem. It reads invoices in whatever form they arrive (handwritten, scanned, printed or digital) and turns them into clean, validated records that accounting software can use right away.
 
 ---
 
 ## 2. Problem Statement
 
-Indian businesses handle **millions of GST invoices every month** across wildly different formats — Excel sheets sent by suppliers, scanned PDFs from old printers, handwritten paper bills from small vendors, digitally generated PDFs, and image captures from mobile phones.
+Indian businesses handle **millions of GST invoices every month**, and no two look alike. Some come as Excel sheets from suppliers, some as scanned PDFs from old printers, some as handwritten paper bills from small vendors, and plenty as photos taken on a phone.
 
-Manually keying this information into accounting systems is:
+Most of this still gets typed into accounting systems by hand, and that creates real problems:
 
-- ⏱ **Slow** — data entry takes hours per batch
-- ❌ **Error-prone** — human transcription introduces arithmetic and GSTIN mistakes
-- 💸 **Costly** — skilled accountants spend time on repetitive extraction instead of analysis
-- 📋 **Non-compliant risk** — GSTIN format errors, CGST/IGST mismatches, and wrong totals lead to GST return rejections
+- ⏱ **Slow.** A single batch can take hours of data entry.
+- ❌ **Error-prone.** Manual transcription leads to arithmetic slips and GSTIN mistakes.
+- 💸 **Costly.** Skilled accountants spend their time on repetitive extraction instead of analysis.
+- 📋 **A compliance risk.** GSTIN format errors, CGST/IGST mismatches and wrong totals can get a GST return rejected.
 
-No existing affordable, open-source tool handles the **full spectrum** of invoice formats — especially **handwritten invoices** — while also performing **statutory GST validation** and returning **structured JSON** ready for accounting software.
+There is no affordable, open-source tool that covers the **full range** of invoice formats, especially **handwritten** ones, while also performing **statutory GST validation** and returning **structured JSON** that accounting software can consume.
 
-**This is the gap VYOM+ fills.**
+**That is the gap VYOM+ is built to fill.**
 
 ---
 
 ## 3. Project Overview
 
-VYOM+ is a **multi-modal document intelligence pipeline** that:
+VYOM+ is a **multi-modal document intelligence pipeline**. It:
 
-1. Accepts invoice documents in **6 formats**: `.xlsx`, `.csv`, `.pdf` (digital), `.pdf` (scanned), `.jpg`/`.jpeg`, `.png`
-2. Routes each document through an **appropriate processing pipeline** based on detected type
-3. Uses **open-source Vision-Language Models** and **OCR engines** to extract invoice fields
-4. Applies a **deterministic GST rules engine** to validate extracted data
+1. Accepts invoices in **6 formats**: `.xlsx`, `.csv`, `.pdf` (digital), `.pdf` (scanned), `.jpg`/`.jpeg` and `.png`
+2. Sends each document down the **right processing path** based on its detected type
+3. Uses **open-source vision-language models** and **OCR engines** to extract the invoice fields
+4. Applies a **deterministic GST rules engine** to validate what was extracted
 5. Scores **field-level confidence** and flags uncertain extractions for human review
-6. Exports results as **JSON, CSV, or Excel**
-7. Provides a **web UI** for evaluators and operators to upload, inspect, correct, and export invoices
+6. Exports results as **JSON, CSV or Excel**
+7. Provides a **web UI** where evaluators and operators can upload, inspect, correct and export invoices
 
-The system is designed around a core principle:
+The whole design rests on one principle:
 
 > **"AI extracts. Deterministic code validates. Confidence decides. Humans resolve uncertainty."**
+
+Here is the upload screen. Drop a file in and the side panel walks through what happens next: format detection, extraction, GST and totals verification, then confidence scoring and exceptions.
+
+![Upload screen with a drag-and-drop area for PDF, JPG, PNG, XLSX and CSV files up to 20 MB, and a four-step "What happens next" panel](docs/screenshots/upload.png)
 
 ---
 
 ## 4. Proposed Solution
 
-VYOM+ proposes a **three-layer architecture**:
+VYOM+ uses a **three-layer architecture**.
 
 ### Layer 1 — Document Ingestion & Parsing
-A smart file router detects the input type and sends it to the correct parser:
-- **Structured files** (Excel, CSV) → `pandas` + `openpyxl` tabular parsing
-- **Digital PDFs** → `PyMuPDF` / `pdfplumber` text & table extraction  
-- **Scanned PDFs & Images** → rendered to images → multi-stage OCR pipeline
+A file router detects the input type and passes it to the right parser:
+- **Structured files** (Excel, CSV) go through `pandas` + `openpyxl`
+- **Digital PDFs** go through `PyMuPDF` / `pdfplumber` for text and table extraction
+- **Scanned PDFs and images** are rendered to images and sent through a multi-stage OCR pipeline
 
 ### Layer 2 — AI-Powered Extraction Engine (Open-Source Core)
-A **two-stage open-source AI pipeline**:
+Two open-source AI stages work together:
 
-1. **PaddleOCR** — extracts raw text and reconstructs tables from scanned/image documents with high accuracy on Indian scripts and low-quality scans
-2. **Qwen2.5-VL (7B)** — an open-weight Vision-Language Model that receives the document image + OCR text and returns structured JSON with all invoice fields, line items, and confidence scores
+1. **PaddleOCR** pulls raw text out of scanned and image documents and rebuilds their tables. It performs well on Indian scripts and low-quality scans.
+2. **Qwen2.5-VL (7B)**, an open-weight Vision-Language Model, receives the document image along with the OCR text and returns structured JSON containing every invoice field, the line items and confidence scores.
 
-This combination outperforms both pure OCR and pure VLM approaches for real-world, messy Indian invoices.
+Together they outperform pure OCR or a pure VLM on the messy, real-world invoices Indian businesses actually deal with.
 
 ### Layer 3 — Validation, Confidence & Export
-- A **deterministic GST rules engine** cross-checks GSTIN format, supply type consistency, line-item arithmetic, and grand total reconciliation
-- A **multi-signal confidence scorer** aggregates OCR confidence + AI confidence + validation pass rate
-- A **human-in-the-loop API** allows operators to correct flagged fields and re-trigger validation
-- **Export layer** produces JSON, CSV, or Excel output
+- A **deterministic GST rules engine** cross-checks GSTIN format, supply-type consistency, line-item arithmetic and grand-total reconciliation.
+- A **multi-signal confidence scorer** combines OCR confidence, AI confidence and the validation pass rate.
+- A **human-in-the-loop API** lets operators correct flagged fields and re-run validation.
+- An **export layer** produces JSON, CSV or Excel output.
 
 ---
 
@@ -103,14 +108,14 @@ This combination outperforms both pure OCR and pure VLM approaches for real-worl
 | # | Objective |
 |---|-----------|
 | 1 | Accept and correctly identify all 6 supported invoice input formats |
-| 2 | Extract all key GST invoice fields: invoice number, date, supplier GSTIN, buyer GSTIN, line items, HSN/SAC codes, CGST, SGST, IGST, totals |
-| 3 | Handle handwritten invoices using open-source OCR + VLM pipeline |
+| 2 | Extract the key GST invoice fields: invoice number, date, supplier GSTIN, buyer GSTIN, line items, HSN/SAC codes, CGST, SGST, IGST and totals |
+| 3 | Handle handwritten invoices with an open-source OCR + VLM pipeline |
 | 4 | Validate extracted data against 7+ deterministic GST statutory rules |
 | 5 | Produce field-level confidence scores and flag low-confidence extractions |
-| 6 | Provide a human-in-the-loop correction interface |
-| 7 | Export standardized JSON / CSV / Excel output for downstream accounting |
-| 8 | Use **only open-source / open-weight AI models** — no proprietary API calls |
-| 9 | Provide a working evaluator interface for document upload and inspection |
+| 6 | Provide an interface where humans can review and correct flagged fields |
+| 7 | Export standardized JSON / CSV / Excel for downstream accounting |
+| 8 | Use **only open-source / open-weight AI models**, with no proprietary API calls |
+| 9 | Provide a working evaluator interface for uploading and inspecting documents |
 
 ---
 
@@ -118,16 +123,16 @@ This combination outperforms both pure OCR and pure VLM approaches for real-worl
 
 | User | Use Case |
 |------|----------|
-| **SME Accountants** | Automate manual GST invoice data entry from vendor bills |
-| **CA Firms** | Batch-process client invoice bundles for GST return filing |
-| **ERP / Accounting Software** | Plug in as a document ingestion microservice |
+| **SME Accountants** | Cut down the manual GST data entry that comes with vendor bills |
+| **CA Firms** | Process client invoice bundles in batches for GST return filing |
+| **ERP / Accounting Software** | Plug in as a document-ingestion microservice |
 | **GST Consultants** | Validate large sets of invoices for compliance audits |
-| **Hackathon Evaluators** | Upload sample invoices and inspect extracted structured data |
-| **VYOM+ Platform** | Use as the AI document intelligence backend for accounting workflows |
+| **Hackathon Evaluators** | Upload sample invoices and inspect the extracted structured data |
+| **VYOM+ Platform** | Serve as the AI document intelligence backend for accounting workflows |
 
 ### Real-World Scenario
 
-> A small textile trader in Surat uploads a blurry photo of a handwritten purchase bill from a local supplier. VYOM+ reads the image, extracts the supplier GSTIN, line items, and GST components, detects that the supplier and buyer are in the same state (intra-state), verifies that CGST + SGST was correctly applied, scores confidence, and returns a validated JSON record — all in under 10 seconds.
+> A small textile trader in Surat uploads a blurry photo of a handwritten purchase bill from a local supplier. VYOM+ reads the image, extracts the supplier GSTIN, line items and GST components, works out that the sale is intra-state, confirms that CGST + SGST were applied correctly, scores its own confidence, and returns a validated JSON record, all in under 10 seconds.
 
 ---
 
@@ -135,23 +140,23 @@ This combination outperforms both pure OCR and pure VLM approaches for real-worl
 
 ### Primary: **Qwen2.5-VL-7B-Instruct**
 - **Model family:** Qwen2.5-VL (Alibaba Cloud, open-weight, Apache 2.0 license)
-- **Model size:** 7B parameters (fits on a single GPU with 16GB VRAM or via quantization on 8GB)
+- **Model size:** 7B parameters. It fits on a single 16GB GPU, or on 8GB with quantization.
 - **HuggingFace:** [`Qwen/Qwen2.5-VL-7B-Instruct`](https://huggingface.co/Qwen/Qwen2.5-VL-7B-Instruct)
-- **Input:** Image(s) + text prompt → structured JSON output
-- **Key capability:** Layout-aware visual reasoning over documents, tables, and handwritten text
+- **Input:** Image(s) plus a text prompt, producing structured JSON output
+- **Key capability:** Layout-aware visual reasoning over documents, tables and handwritten text
 
 ### Secondary OCR: **PaddleOCR (PP-OCRv4)**
 - **Library:** `paddlepaddle` + `paddleocr`
 - **License:** Apache 2.0
-- **Key capability:** State-of-the-art OCR for printed and semi-handwritten documents with table structure recognition (`PP-Structure`)
+- **Key capability:** State-of-the-art OCR for printed and semi-handwritten documents, with table structure recognition through `PP-Structure`
 
 ### Fallback OCR: **EasyOCR**
 - **License:** Apache 2.0
-- **Key capability:** Lightweight multi-language OCR, runs CPU-only, no GPU needed
+- **Key capability:** Lightweight multi-language OCR that runs on CPU alone, so no GPU is needed
 
 ### LLM for Text Structuring: **Qwen2.5-7B-Instruct** (text-only fallback)
-- Used when document is already digital text (CSV/Excel/digital PDF) and no vision is needed
-- Structures raw text into the invoice JSON schema
+- Used when the document is already digital text (CSV, Excel, digital PDF) and vision isn't required
+- Structures the raw text into the invoice JSON schema
 - **License:** Apache 2.0
 
 ---
@@ -171,22 +176,22 @@ This combination outperforms both pure OCR and pure VLM approaches for real-worl
 | Multi-language (Hindi labels) | ✅ Yes | ⚠️ English-focused | ⚠️ English-focused | ⚠️ Config needed |
 | Diverse vendor layouts | ✅ Robust | ❌ Layout-sensitive | ❌ Template-sensitive | ❌ Brittle |
 
-**Qwen2.5-VL-7B wins** because it is the only model that can handle all three of our hardest input categories — handwritten bills, scanned invoices from low-end printers, and varied vendor templates — without needing a labeled dataset to fine-tune.
+**Qwen2.5-VL-7B comes out ahead** because it is the only option that can handle our three hardest input categories (handwritten bills, scans from low-end printers, and wildly varied vendor templates) without a labeled dataset to fine-tune on.
 
 ### Why PaddleOCR?
-PaddleOCR's `PP-Structure` module reconstructs table cells from scanned documents — a critical pre-processing step that dramatically improves VLM accuracy on invoices with complex line-item tables. It outperforms EasyOCR and Tesseract on Indian-language labels in headers and footers.
+PaddleOCR's `PP-Structure` module rebuilds table cells from scanned documents. That is a key pre-processing step, and it noticeably improves the VLM's accuracy on invoices with complex line-item tables. It also beats EasyOCR and Tesseract on Indian-language labels in headers and footers.
 
 ### Why open-source over APIs?
-- **Data privacy:** GST invoices contain sensitive financial and GSTIN data. Local inference keeps all data on-premises
-- **No per-call cost:** API calls at scale are expensive; open-weight models run freely after initial setup
-- **Offline capable:** Works in environments without reliable internet (common in smaller Indian offices)
-- **Hackathon requirement:** The problem statement explicitly mandates open-source AI
+- **Data privacy:** GST invoices contain sensitive financial and GSTIN data. Local inference keeps all of it on-premises.
+- **No per-call cost:** API calls get expensive at scale, while open-weight models run freely after the initial setup.
+- **Offline capable:** The system works where internet access is unreliable, which is common in smaller Indian offices.
+- **Hackathon requirement:** The problem statement explicitly mandates open-source AI.
 
 ---
 
 ## 9. AI's Role in the System
 
-AI is the **core intelligence layer** — not a wrapper, not an optional add-on. Here is the precise role of each AI component:
+AI is the **core intelligence layer** of VYOM+, not a wrapper or an optional add-on. Here is what each AI component does:
 
 ```
 Document Image / Text
@@ -224,8 +229,8 @@ Document Image / Text
 └──────────────────────────────────────────────────────────────────┘
 ```
 
-**AI does:** Reading, understanding layout, resolving handwriting ambiguities, mapping fields semantically, assigning confidence  
-**AI does NOT do:** GST rule checking, arithmetic verification, schema enforcement — those are deterministic
+**AI does:** reading, understanding layout, resolving handwriting ambiguities, mapping fields semantically and assigning confidence.  
+**AI does NOT do:** GST rule checking, arithmetic verification or schema enforcement. Those stay deterministic so the results are always predictable.
 
 ---
 
@@ -318,6 +323,8 @@ vyom-invoice-ai/
 │       └── ConfidenceBar.tsx
 ├── demo_ui/
 │   └── streamlit_app.py             ← Streamlit demo (for evaluators)
+├── docs/
+│   └── screenshots/                 ← UI screenshots used in this README
 └── sample_invoices/
     ├── handwritten/                 ← Handwritten sample bills
     ├── scanned_pdf/                 ← Scanned PDF invoices
@@ -415,7 +422,7 @@ User uploads file (any format)
 
 ## 13. Agentic Workflow
 
-VYOM+ implements a **Human-in-the-Loop (HITL) agentic review workflow** for low-confidence documents.
+VYOM+ uses a **Human-in-the-Loop (HITL) agentic review workflow** for documents it isn't confident about.
 
 ```
                     ┌─────────────────────────────┐
@@ -462,7 +469,7 @@ VYOM+ implements a **Human-in-the-Loop (HITL) agentic review workflow** for low-
                                    └──────────────────────────┘
 ```
 
-**Why this is agentic:** The system does not just extract and return. It **reasons about its own uncertainty** (confidence scores), **decides whether to involve a human** (≥ 90% auto-approved, < 70% flagged), and **adapts its output** based on human correction — completing a full agent loop: *Perceive → Reason → Act → Adapt*.
+**Why this counts as agentic:** the system doesn't just extract and hand back a result. It **reasons about its own uncertainty** through confidence scores, **decides whether a person needs to step in** (90% and above is auto-approved, below 70% is flagged), and **adapts its output** once a human corrects it. That completes a full agent loop: *Perceive → Reason → Act → Adapt*.
 
 ---
 
@@ -498,73 +505,77 @@ VYOM+ implements a **Human-in-the-Loop (HITL) agentic review workflow** for low-
 
 | # | Feature | Description |
 |---|---------|-------------|
-| 1 | **Multi-format Upload** | Accept xlsx, csv, pdf, jpg, png via REST API and Streamlit UI |
-| 2 | **Smart File Routing** | Auto-detect input type and route to correct pipeline |
-| 3 | **Handwritten Invoice OCR** | PaddleOCR + Qwen2.5-VL handles handwritten bills |
-| 4 | **Structured Extraction** | All GST fields extracted into standard JSON schema |
-| 5 | **GSTIN Validation** | 15-char format, state code, checksum validation |
-| 6 | **Supply Type Check** | Intra-state (CGST+SGST) vs inter-state (IGST) consistency |
-| 7 | **Line Item Arithmetic** | Qty × Rate − Discount = Taxable Value cross-check |
-| 8 | **Tax Total Validation** | CGST + SGST + IGST + Cess = Total Tax verification |
-| 9 | **Grand Total Reconciliation** | Taxable + Total Tax + Round-off = Grand Total |
-| 10 | **Confidence Scoring** | Per-field confidence (0–100%) with overall score |
-| 11 | **HITL Review Interface** | Flagged documents shown in UI with correction fields |
-| 12 | **Dot-Notation Correction** | Correct any field via `supplier.gstin`, `items[0].unit_price` |
-| 13 | **Export: JSON** | Machine-readable standardized JSON download |
+| 1 | **Multi-format Upload** | Accepts xlsx, csv, pdf, jpg and png through the REST API and the Streamlit UI |
+| 2 | **Smart File Routing** | Detects the input type automatically and picks the right pipeline |
+| 3 | **Handwritten Invoice OCR** | PaddleOCR + Qwen2.5-VL read handwritten bills |
+| 4 | **Structured Extraction** | Every GST field is extracted into one standard JSON schema |
+| 5 | **GSTIN Validation** | Checks the 15-character format, state code and checksum |
+| 6 | **Supply Type Check** | Confirms intra-state (CGST+SGST) vs inter-state (IGST) consistency |
+| 7 | **Line Item Arithmetic** | Cross-checks Qty × Rate − Discount = Taxable Value |
+| 8 | **Tax Total Validation** | Verifies CGST + SGST + IGST + Cess = Total Tax |
+| 9 | **Grand Total Reconciliation** | Verifies Taxable + Total Tax + Round-off = Grand Total |
+| 10 | **Confidence Scoring** | Per-field confidence (0–100%) along with an overall score |
+| 11 | **HITL Review Interface** | Flagged documents appear in the UI with fields ready to correct |
+| 12 | **Dot-Notation Correction** | Fix any field by path, such as `supplier.gstin` or `items[0].unit_price` |
+| 13 | **Export: JSON** | Machine-readable, standardized JSON download |
 | 14 | **Export: CSV** | Line-item CSV for spreadsheet workflows |
-| 15 | **Export: Excel** | Multi-tab workbook with invoice summary + line items |
-| 16 | **Dashboard Stats** | Total processed, by status, average confidence, recent invoices |
-| 17 | **Document History** | All processed invoices stored and queryable |
-| 18 | **Status Filtering** | Filter documents by: valid, warning, needs_review, invalid |
+| 15 | **Export: Excel** | Multi-tab workbook with an invoice summary and line items |
+| 16 | **Dashboard Stats** | Total processed, breakdown by status, average confidence and recent invoices |
+| 17 | **Document History** | Every processed invoice is stored and queryable |
+| 18 | **Status Filtering** | Filter documents by valid, warning, needs_review or invalid |
+
+The dashboard brings several of these together. The workspace overview shows documents processed, how many validated, how many need review and the average confidence. A "Needs your attention" panel surfaces anything waiting on verification, and recent documents sit beside it with their status.
+
+![Workspace overview dashboard showing 2 documents processed, 2 validated, 0 needing review and 99% average confidence, with sample_invoice.xlsx and sample_invoice.csv listed as validated](docs/screenshots/dashboard.png)
 
 ### Advanced Features (Stretch Goals)
 
 | # | Feature |
 |---|---------|
 | 19 | Batch upload (ZIP of multiple invoices) |
-| 20 | PDF export with QR code of IRN for e-invoice verification |
+| 20 | PDF export with a QR code of the IRN for e-invoice verification |
 | 21 | Duplicate invoice detection |
-| 22 | LoRA fine-tuning pipeline on custom GST invoice dataset |
+| 22 | LoRA fine-tuning pipeline on a custom GST invoice dataset |
 
 ---
 
 ## 16. Implementation Approach
 
 ### Phase 1 — Foundation (Day 1 of Final Hackathon)
-- Set up FastAPI backend with Pydantic schemas and SQLite database
-- Implement Excel and CSV parsers (`pandas` + `openpyxl`)
-- Define Universal Invoice JSON schema
-- Write basic GST validation rules
+- Set up the FastAPI backend with Pydantic schemas and a SQLite database
+- Implement the Excel and CSV parsers (`pandas` + `openpyxl`)
+- Define the Universal Invoice JSON schema
+- Write the basic GST validation rules
 
 ### Phase 2 — OCR + Digital PDF (Day 1–2)
 - Integrate `PyMuPDF` for digital PDF text extraction
-- Set up `PaddleOCR` for image and scanned PDF text extraction
-- Implement image pre-processing pipeline (OpenCV: deskew, denoise, binarize)
-- Build `file_router.py` dispatcher
+- Set up `PaddleOCR` for image and scanned-PDF text extraction
+- Build the image pre-processing pipeline with OpenCV (deskew, denoise, binarize)
+- Build the `file_router.py` dispatcher
 
 ### Phase 3 — Open-Source VLM Integration (Day 2)
-- Load `Qwen2.5-VL-7B-Instruct` via HuggingFace Transformers
-- Design GST extraction prompt with schema definition
-- Implement two-stage pipeline: PaddleOCR → Qwen2.5-VL
-- Test on all 6 input format types
+- Load `Qwen2.5-VL-7B-Instruct` through HuggingFace Transformers
+- Design the GST extraction prompt with the schema definition
+- Implement the two-stage pipeline: PaddleOCR → Qwen2.5-VL
+- Test across all 6 input format types
 
 ### Phase 4 — Validation + Confidence (Day 2–3)
-- Build 7-rule deterministic GST validation engine
-- Implement multi-signal confidence scorer
-- Wire up Human-in-the-Loop correction API
-- Add re-validation on correction
+- Build the 7-rule deterministic GST validation engine
+- Implement the multi-signal confidence scorer
+- Wire up the Human-in-the-Loop correction API
+- Add re-validation whenever a correction is made
 
 ### Phase 5 — Export + UI (Day 3)
-- Implement JSON, CSV, Excel exporters
-- Build Streamlit demo UI for evaluators
-- (Stretch) Build Next.js frontend
-- Test end-to-end with all sample invoice types
+- Implement the JSON, CSV and Excel exporters
+- Build the Streamlit demo UI for evaluators
+- (Stretch) Build the Next.js frontend
+- Test end-to-end with every sample invoice type
 
 ### Phase 6 — Polish + Evaluation (Day 3–4)
 - Add sample invoices for each format type
 - Measure accuracy on held-out test invoices
 - Write evaluation metrics (field extraction accuracy, GSTIN validation pass rate)
-- Final README, demo video, and submission
+- Finish the README, demo video and submission
 
 ---
 
@@ -655,12 +666,12 @@ VYOM+ implements a **Human-in-the-Loop (HITL) agentic review workflow** for low-
 ```
 
 ### System-Level Outputs:
-- ✅ Working REST API (FastAPI, auto-documented at `/docs`)
-- ✅ Streamlit evaluator interface with upload + inspection
-- ✅ Dashboard with processing statistics
-- ✅ Export in JSON, CSV, Excel
+- ✅ A working REST API (FastAPI, auto-documented at `/docs`)
+- ✅ A Streamlit evaluator interface for upload and inspection
+- ✅ A dashboard with processing statistics
+- ✅ Export in JSON, CSV and Excel
 - ✅ Sample invoices tested across all 6 format types
-- ✅ Accuracy metrics on held-out test set
+- ✅ Accuracy metrics on a held-out test set
 
 ---
 
@@ -670,24 +681,24 @@ VYOM+ implements a **Human-in-the-Loop (HITL) agentic review workflow** for low-
 
 | Milestone | Change |
 |-----------|--------|
-| **Scale storage** | Replace SQLite with PostgreSQL + connection pooling |
-| **Scale inference** | Deploy Qwen2.5-VL via vLLM for batched GPU inference (10x throughput) |
-| **Scale API** | Add Celery + Redis task queue for async processing of large batches |
-| **Containerize** | Docker + docker-compose for reproducible deployment |
-| **Cloud deploy** | Deploy on cloud VM with GPU (AWS/GCP/Azure) or use RunPod |
+| **Scale storage** | Replace SQLite with PostgreSQL and connection pooling |
+| **Scale inference** | Deploy Qwen2.5-VL on vLLM for batched GPU inference (roughly 10x throughput) |
+| **Scale API** | Add a Celery + Redis task queue so large batches process asynchronously |
+| **Containerize** | Use Docker + docker-compose for reproducible deployment |
+| **Cloud deploy** | Run on a GPU cloud VM (AWS/GCP/Azure) or on RunPod |
 
 ### Feature Roadmap
 
 | Feature | Timeline |
 |---------|----------|
-| **Fine-tuning on Indian GST data** | Post-hackathon — LoRA fine-tune Qwen2.5-VL on labeled Indian invoice dataset to boost accuracy on regional vendor formats |
-| **Batch ZIP upload** | Accept ZIP of 50+ invoices, process in parallel, return batch results |
-| **E-invoice QR verification** | Decode IRN QR codes on e-invoices, cross-verify with NIC portal |
+| **Fine-tuning on Indian GST data** | Post-hackathon: LoRA fine-tune Qwen2.5-VL on a labeled Indian invoice dataset to improve accuracy on regional vendor formats |
+| **Batch ZIP upload** | Accept a ZIP of 50+ invoices, process them in parallel and return batch results |
+| **E-invoice QR verification** | Decode IRN QR codes on e-invoices and cross-verify them with the NIC portal |
 | **GSTR-2A reconciliation** | Match extracted purchase invoices against GSTR-2A data |
-| **Multi-tenant SaaS** | Add organization accounts, role-based access, audit logs |
-| **Mobile app** | Camera capture → instant invoice scan via mobile PWA |
-| **Multilingual invoices** | Extend to regional languages (Hindi, Gujarati, Tamil) in headers/footers |
-| **ERP integrations** | REST webhooks for Tally Prime, Zoho Books, QuickBooks |
+| **Multi-tenant SaaS** | Add organization accounts, role-based access and audit logs |
+| **Mobile app** | Camera capture for instant invoice scanning through a mobile PWA |
+| **Multilingual invoices** | Extend support to regional languages (Hindi, Gujarati, Tamil) in headers and footers |
+| **ERP integrations** | REST webhooks for Tally Prime, Zoho Books and QuickBooks |
 
 ---
 
@@ -719,7 +730,7 @@ VYOM+ implements a **Human-in-the-Loop (HITL) agentic review workflow** for low-
 | `qrcode` | 8.0+ | BSD | QR code generation (e-invoice) |
 | `pytest` | 8.0+ | MIT | Unit and integration testing |
 
-**All components are 100% open-source. No proprietary model APIs are used.**
+**Every component is open-source. No proprietary model APIs are used.**
 
 ---
 
@@ -727,26 +738,26 @@ VYOM+ implements a **Human-in-the-Loop (HITL) agentic review workflow** for low-
 
 | # | Challenge | Risk | Mitigation |
 |---|-----------|------|------------|
-| 1 | **Handwritten invoice quality** — low-contrast, faded ink, irregular spacing | High | Multi-step image enhancement (deskew, denoise, adaptive thresholding) before OCR; Qwen2.5-VL handles handwriting natively |
-| 2 | **Qwen2.5-VL GPU memory** — 7B model needs ~14GB VRAM | High | Use 4-bit BitsAndBytes quantization (reduces to ~4-5GB); fallback to smaller Qwen2.5-3B-Instruct if needed |
-| 3 | **Diverse Indian vendor formats** — hundreds of unique invoice layouts | High | Qwen2.5-VL does not need templates; prompt-based extraction is layout-agnostic |
-| 4 | **OCR errors on regional fonts** — Hindi/Gujarati characters in headers | Medium | PaddleOCR supports multilingual models; English extraction still works if headers are non-English |
-| 5 | **Table cell misalignment** — merged cells in complex line-item tables | Medium | PP-Structure table reconstruction handles merged cells; VLM cross-verifies with the full image |
-| 6 | **JSON hallucination** — AI generating plausible but wrong field values | Medium | Strict JSON schema enforcement via Pydantic; deterministic validator catches arithmetic errors; confidence scores flag uncertain outputs |
-| 7 | **Inference latency** — Qwen2.5-VL at 7B may be slow on CPU | Medium | GPU strongly preferred; for CPU-only: use EasyOCR + Qwen2.5-3B text-only model as a fast path |
-| 8 | **Missing fields** — partial invoices without buyer GSTIN etc. | Low | All fields are `Optional` in schema; validator produces `warning` (not `error`) for missing non-critical fields |
-| 9 | **Model hallucination on blank areas** — AI invents values for empty regions | Low | Prompt explicitly instructs: "return null if not visible"; confidence scores and validation catch invented values |
-| 10 | **GSTIN OCR confusion** — common mistakes: O vs 0, I vs 1, S vs 5 | Low | PaddleOCR has high accuracy on printed characters; VLM prompt includes disambiguation rules for character confusion |
+| 1 | **Handwritten invoice quality** — low contrast, faded ink, irregular spacing | High | Multi-step image enhancement (deskew, denoise, adaptive thresholding) before OCR; Qwen2.5-VL reads handwriting natively |
+| 2 | **Qwen2.5-VL GPU memory** — the 7B model needs about 14GB VRAM | High | Use 4-bit BitsAndBytes quantization (down to roughly 4–5GB), and fall back to the smaller Qwen2.5-3B-Instruct if needed |
+| 3 | **Diverse Indian vendor formats** — hundreds of unique invoice layouts | High | Qwen2.5-VL needs no templates, and prompt-based extraction doesn't depend on layout |
+| 4 | **OCR errors on regional fonts** — Hindi/Gujarati characters in headers | Medium | PaddleOCR has multilingual models, and English fields still extract correctly when headers are in another script |
+| 5 | **Table cell misalignment** — merged cells in complex line-item tables | Medium | PP-Structure handles merged cells, and the VLM cross-checks against the full image |
+| 6 | **JSON hallucination** — the AI producing plausible but wrong field values | Medium | Strict Pydantic schema enforcement, deterministic arithmetic checks and confidence scores that flag uncertain output |
+| 7 | **Inference latency** — Qwen2.5-VL at 7B can be slow on CPU | Medium | A GPU is strongly preferred; for CPU-only setups, use EasyOCR with the text-only Qwen2.5-3B as a fast path |
+| 8 | **Missing fields** — partial invoices without a buyer GSTIN, for example | Low | All fields are `Optional`, and the validator raises a `warning` (not an error) for missing non-critical fields |
+| 9 | **Model hallucination on blank areas** — the AI inventing values for empty regions | Low | The prompt says to return null if a value isn't visible, and confidence scores and validation catch invented values |
+| 10 | **GSTIN OCR confusion** — common mix-ups like O vs 0, I vs 1, S vs 5 | Low | PaddleOCR is accurate on printed characters, and the VLM prompt includes disambiguation rules for these confusions |
 
 ---
 
 ## 21. Deployment Strategy
 
-VYOM+ is designed to run in **three different modes** depending on available hardware — from a free cloud notebook to a production server.
+VYOM+ is designed to run in **three different modes** depending on the hardware available, from a free cloud notebook up to a production server.
 
 ### Mode 1 — Hackathon Demo (Recommended for Final Round)
 
-The AI model is heavy (~7B parameters). Most laptops cannot run it locally. The cleanest approach for the hackathon demo is a **split deployment**:
+The AI model is heavy (about 7B parameters), and most laptops can't run it locally. The cleanest approach for the hackathon demo is a **split deployment**: the app runs on your laptop while the AI runs on a free cloud GPU.
 
 ```
 ┌──────────────────────────────────────────────────────────┐
@@ -776,19 +787,19 @@ The AI model is heavy (~7B parameters). Most laptops cannot run it locally. The 
 ```
 
 **Step-by-step for demo day:**
-1. Open Google Colab → load Qwen2.5-VL-7B on free T4 GPU
+1. Open Google Colab and load Qwen2.5-VL-7B on the free T4 GPU
 2. Run a small FastAPI inference endpoint inside Colab
 3. Use `ngrok` to get a public URL for the Colab server
-4. Point your local FastAPI's `AI_INFERENCE_URL` env variable to that ngrok URL
-5. Run Streamlit locally — evaluator uploads invoice → routes to Colab → result returns instantly
+4. Point your local FastAPI's `AI_INFERENCE_URL` environment variable at that ngrok URL
+5. Run Streamlit locally. The evaluator uploads an invoice, it is routed to Colab, and the result comes straight back
 
-**Cost: $0** (Colab free tier has enough GPU time for a full demo session)
+**Cost: $0.** The Colab free tier gives you enough GPU time for a full demo session.
 
 ---
 
 ### Mode 2 — Cloud Production Deployment
 
-For scaling beyond the hackathon to real-world use:
+For scaling beyond the hackathon into real-world use:
 
 ```
 Users ──► Nginx Load Balancer
@@ -844,16 +855,17 @@ CONFIDENCE_THRESHOLD_REVIEW=0.70
 
 ## Summary
 
-VYOM+ addresses a **real, high-impact problem** in the Indian GST compliance space using a thoughtfully designed open-source AI pipeline. The system combines:
+VYOM+ takes on a real, high-impact problem in Indian GST compliance with a carefully designed open-source AI pipeline. It brings together:
 
-- 🔍 **PaddleOCR** for fast, accurate text and table extraction from any scan quality
-- 🧠 **Qwen2.5-VL-7B** — an open-weight Vision-Language Model — for semantic understanding of invoice layout and handwritten content
+- 🔍 **PaddleOCR** for fast, accurate text and table extraction at any scan quality
+- 🧠 **Qwen2.5-VL-7B**, an open-weight Vision-Language Model, to understand invoice layout and handwritten content
 - ✅ **Deterministic GST rules** for reliable statutory validation
-- 🔄 **Human-in-the-loop review** for uncertainty resolution
+- 🔄 **Human-in-the-loop review** to resolve whatever the system is unsure about
 - 📤 **Multi-format export** for downstream accounting integration
 
-The result is a system that can take a blurry photo of a handwritten vendor bill and return a validated, machine-readable GST invoice record — **without any proprietary API calls, without any subscription cost, and without any data leaving the user's infrastructure**.
+The end result is a system that can take a blurry photo of a handwritten vendor bill and return a validated, machine-readable GST invoice record, **with no proprietary API calls, no subscription cost, and no data leaving the user's infrastructure**.
 
 ---
- 
+
+*Hacktober Fest 4 · Open Source AI Hackathon · Qualifier Submission · Problem Statement 3*  
 *All technologies used are open-source or open-weight. No proprietary AI APIs.*
