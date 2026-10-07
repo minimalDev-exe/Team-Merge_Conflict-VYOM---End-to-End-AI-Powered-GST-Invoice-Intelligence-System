@@ -1,6 +1,6 @@
 # VYOM+ — End-to-End AI-Powered GST Invoice Intelligence System
 
-> **Hacktober Fest 4 · Open Source AI Hackathon · Problem Statement 3**  
+> **HacktoberFest Hack Day · Open Source AI Hackathon · Problem Statement 3**  
 
 ---
 
