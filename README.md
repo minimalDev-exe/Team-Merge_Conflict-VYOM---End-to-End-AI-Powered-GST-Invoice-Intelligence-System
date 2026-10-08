@@ -2,6 +2,14 @@
 
 > **HacktoberFest Hack Day · Open Source AI Hackathon · Problem Statement 3**  
 
+### 👥 Team Merge Conflict
+
+| # | Team Member |
+|---|-------------|
+| 1 | Krishna Mall |
+| 2 | Aaroos Patel |
+| 3 | Aryan Malhotra |
+
 ---
 
 ## Table of Contents
