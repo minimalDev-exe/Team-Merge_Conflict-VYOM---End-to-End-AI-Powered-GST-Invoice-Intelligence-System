@@ -2,9 +2,9 @@
 
 > **HacktoberFest Hack Day · Open Source AI Hackathon · Problem Statement 3**  
 
-### 👥 Team Merge Conflict
+### 👥 Team - Merge Conflict
 
-| # | Team Member |
+| # | Team Members |
 |---|-------------|
 | 1 | Krishna Mall |
 | 2 | Aaroos Patel |
@@ -80,8 +80,7 @@ The whole design rests on one principle:
 
 Here is the upload screen. Drop a file in and the side panel walks through what happens next: format detection, extraction, GST and totals verification, then confidence scoring and exceptions.
 
-<img style="width: 50%;" alt="Screenshot 2026-10-08 015259" src="https://github.com/user-attachments/assets/7324f5c6-98c2-4426-8c10-ca7f7240d97e" /> 
-<img style="width: 50%;" alt="Screenshot 2026-10-08 015227" src="https://github.com/user-attachments/assets/4b478580-da14-4217-90fc-3f1662e84a4b" />
+<img width="1190" height="513" alt="Screenshot 2026-10-08 015259" src="https://github.com/user-attachments/assets/eb3e326a-f8f5-4508-963b-9a8e14a020f0" />
 
 ---
 
@@ -534,7 +533,7 @@ VYOM+ uses a **Human-in-the-Loop (HITL) agentic review workflow** for documents 
 
 The dashboard brings several of these together. The workspace overview shows documents processed, how many validated, how many need review and the average confidence. A "Needs your attention" panel surfaces anything waiting on verification, and recent documents sit beside it with their status.
 
-![Workspace overview dashboard showing 2 documents processed, 2 validated, 0 needing review and 99% average confidence, with sample_invoice.xlsx and sample_invoice.csv listed as validated](docs/screenshots/dashboard.png)
+<img width="1622" height="677" alt="Screenshot 2026-10-08 015227" src="https://github.com/user-attachments/assets/250ec4bc-77c9-47cf-a855-27b8a4100963" />
 
 ### Advanced Features (Stretch Goals)
 
